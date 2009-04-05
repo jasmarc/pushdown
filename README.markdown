@@ -3,7 +3,7 @@ Non-Deterministic Pushdown Automaton Simulator
 
 This is a ruby implementation of a [Non-Deterministic Pushdown Automaton](http://en.wikipedia.org/wiki/Pushdown_automaton)
 
-This is the machine:
+This is the machine for palindromes:
 
     1:	(q0, a, Z) -> (q0, aZ)(q1, Z)
     2:	(q0, b, Z) -> (q0, bZ)(q1, Z)
@@ -18,80 +18,49 @@ This is the machine:
     11:	(q1, b, b) -> (q1, )
     12:	(q1, , Z) -> (q2, Z)
 
-Here's some sample output:
+We can print a derivation tree. This one is for "aba":
 
-    (q0, a, Z)
-    rule  1 |-(q0, , aZ)
-    rule  8  |-(q1, , aZ)
-    Crash! I couldn't find a rule for: state q1, input , stack aZ
-    rule  1 |-(q1, , Z)
-    rule 12  |-(q2, , Z)
-    Accept
-    rule  7 |-(q1, a, Z)
-    rule 12  |-(q2, a, Z)
-    Crash! I couldn't find a rule for: state q2, input a, stack Z
-
-    (q0, ab, Z)
-    rule  1 |-(q0, b, aZ)
-    rule  4  |-(q0, , baZ)
-    rule  9   |-(q1, , baZ)
+    (q0, aba, Z)
+    rule  1 |-(q0, ba, aZ)
+    rule  4  |-(q0, a, baZ)
+    rule  5   |-(q0, , abaZ)
+    rule  8    |-(q1, , abaZ)
+    Crash! I couldn't find a rule for: state q1, input , stack abaZ
+    rule  5   |-(q1, , baZ)
     Crash! I couldn't find a rule for: state q1, input , stack baZ
-    rule  4  |-(q1, , aZ)
-    Crash! I couldn't find a rule for: state q1, input , stack aZ
-    rule  8  |-(q1, b, aZ)
-    Crash! I couldn't find a rule for: state q1, input b, stack aZ
-    rule  1 |-(q1, b, Z)
-    rule 12  |-(q2, b, Z)
-    Crash! I couldn't find a rule for: state q2, input b, stack Z
-    rule  7 |-(q1, ab, Z)
-    rule 12  |-(q2, ab, Z)
-    Crash! I couldn't find a rule for: state q2, input ab, stack Z
-
-    (q0, bb, Z)
-    rule  2 |-(q0, b, bZ)
-    rule  6  |-(q0, , bbZ)
-    rule  9   |-(q1, , bbZ)
-    Crash! I couldn't find a rule for: state q1, input , stack bbZ
-    rule  6  |-(q1, , bZ)
-    Crash! I couldn't find a rule for: state q1, input , stack bZ
-    rule  9  |-(q1, b, bZ)
-    rule 11   |-(q1, , Z)
+    rule  9   |-(q1, a, baZ)
+    Crash! I couldn't find a rule for: state q1, input a, stack baZ
+    rule  4  |-(q1, a, aZ)
+    rule 10   |-(q1, , Z)
     rule 12    |-(q2, , Z)
     Accept
-    rule  2 |-(q1, b, Z)
-    rule 12  |-(q2, b, Z)
-    Crash! I couldn't find a rule for: state q2, input b, stack Z
-    rule  7 |-(q1, bb, Z)
-    rule 12  |-(q2, bb, Z)
-    Crash! I couldn't find a rule for: state q2, input bb, stack Z
+    rule  8  |-(q1, ba, aZ)
+    Crash! I couldn't find a rule for: state q1, input ba, stack aZ
+    rule  1 |-(q1, ba, Z)
+    rule 12  |-(q2, ba, Z)
+    Crash! I couldn't find a rule for: state q2, input ba, stack Z
+    rule  7 |-(q1, aba, Z)
+    rule 12  |-(q2, aba, Z)
+    Crash! I couldn't find a rule for: state q2, input aba, stack Z
+    
+We can test whether certain strings accept:
 
-    (q0, bbb, Z)
-    rule  2 |-(q0, bb, bZ)
-    rule  6  |-(q0, b, bbZ)
-    rule  6   |-(q0, , bbbZ)
-    rule  9    |-(q1, , bbbZ)
-    Crash! I couldn't find a rule for: state q1, input , stack bbbZ
-    rule  6   |-(q1, , bbZ)
-    Crash! I couldn't find a rule for: state q1, input , stack bbZ
-    rule  9   |-(q1, b, bbZ)
-    rule 11    |-(q1, , bZ)
-    Crash! I couldn't find a rule for: state q1, input , stack bZ
-    rule  6  |-(q1, b, bZ)
-    rule 11   |-(q1, , Z)
-    rule 12    |-(q2, , Z)
-    Accept
-    rule  9  |-(q1, bb, bZ)
-    rule 11   |-(q1, b, Z)
-    rule 12    |-(q2, b, Z)
-    Crash! I couldn't find a rule for: state q2, input b, stack Z
-    rule  2 |-(q1, bb, Z)
-    rule 12  |-(q2, bb, Z)
-    Crash! I couldn't find a rule for: state q2, input bb, stack Z
-    rule  7 |-(q1, bbb, Z)
-    rule 12  |-(q2, bbb, Z)
-    Crash! I couldn't find a rule for: state q2, input bbb, stack Z
+    a                    true
+    ab                   false
+    bb                   true
+    bbb                  true
+                         true
+    bbaabb               true
 
-    (q0, , Z)
-    rule  7 |-(q1, , Z)
-    rule 12  |-(q2, , Z)
-    Accept
+We can count the number of leaf nodes in the derivation tree (crashes plus accept, if any):
+
+    a                    3
+    ab                   5
+    bb                   5
+    aab                  7
+    aba                  7
+    bbb                  7
+    abba                 9
+    abbab                11
+    abbaba               13
+    bbbbbb               13
