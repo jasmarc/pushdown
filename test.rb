@@ -32,7 +32,8 @@ class PDATests < Test::Unit::TestCase
   end
 
   def test_count_leaf_nodes
-    ["a", "ab", "bb", "bbb", "", "bbaabb"].each do |s|
+    puts
+    ["a", "ab", "bb", "aab", "aba", "bbb", "abba", "abbab", "abbaba", "bbbbbb"].each do |s|
       puts "%-20s %s" % [s, @foo.count_leaf_nodes(Configuration.new(:q0, s, "Z"))]
     end
   end
