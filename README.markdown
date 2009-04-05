@@ -1,4 +1,5 @@
-==Pushdown Automaton Simulator==
+Non-Deterministic Pushdown Automaton Simulator
+==============================================
 
 This is a ruby implementation of a [Non-Deterministic Pushdown Automaton](http://en.wikipedia.org/wiki/Pushdown_automaton)
 
