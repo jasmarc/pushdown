@@ -20,43 +20,20 @@ class PDATests < Test::Unit::TestCase
             ]
     @foo = PDA.new(rules)
   end
-  
-  def test_top
-    assert_equal(@foo.top("a"), ["a", ""])
-    assert_equal(@foo.top("ab"), ["a", "b"])
-    assert_equal(@foo.top("abb"), ["a", "bb"])
-    assert_equal(@foo.top(""), ["", ""])
-  end
-  
+
   def test_print_rules
     @foo.print_rules
   end
-  
-  def test_get_moves
-    moves = @foo.get_moves(Configuration.new(:q0, "a", "Z"))
-    assert_equal(moves.size, 3)
-    puts moves
-    assert_equal(moves[0].state, :q0)
-    assert_equal(moves[0].stack, "aZ")
-    assert_equal(moves[1].state, :q1)
-    assert_equal(moves[1].stack, "Z")
-    assert_equal(moves[2].state, :q1)
-    assert_equal(moves[2].stack, "Z")
-    baz = (rand * (moves.size - 1)).round
-    puts baz
-    move = moves[baz]
-    puts move 
-  end
-  
+
   def test_accept
-    @foo.accept? Configuration.new(:q0, "a", "Z"), ""
-    puts
-    @foo.accept? Configuration.new(:q0, "ab", "Z"), ""
-    puts
-    @foo.accept? Configuration.new(:q0, "bb", "Z"), ""
-    puts
-    @foo.accept? Configuration.new(:q0, "bbb", "Z"), ""
-    puts
-    @foo.accept? Configuration.new(:q0, "", "Z"), ""
+    ["a", "ab", "bb", "bbb", "", "bbaabb"].each do |s|
+      puts "%-20s %s" % [s, @foo.accept?(Configuration.new(:q0, s, "Z"))]
+    end
+  end
+
+  def test_count_leaf_nodes
+    ["a", "ab", "bb", "bbb", "", "bbaabb"].each do |s|
+      puts "%-20s %s" % [s, @foo.count_leaf_nodes(Configuration.new(:q0, s, "Z"))]
+    end
   end
 end
