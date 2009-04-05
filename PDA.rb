@@ -29,7 +29,7 @@ class PDA
     @leaf_nodes
   end
 
-  def derivation_tree(config, whitespace="", verbose=false)
+  def derivation_tree(config, verbose=false, whitespace="")
     print "(#{config.state}, #{config.input}, #{config.stack})\n" if verbose
     moves = get_moves(config)
     
@@ -46,7 +46,7 @@ class PDA
         else
           unread = top(config.input)[1]
         end
-        derivation_tree(Configuration.new(m.state, unread, m.stack + top(config.stack)[1]), whitespace + " ")
+        derivation_tree(Configuration.new(m.state, unread, m.stack + top(config.stack)[1]), verbose, whitespace + " ")
       end
     end
   end
