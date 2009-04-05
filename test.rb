@@ -32,6 +32,8 @@ class PDATests < Test::Unit::TestCase
              [10, :q1, "a", "b", [[:q1, ""]]],
              [11, :q1, "b", "a", [[:q1, ""]]],
              [12, :q1, "", "Z", [[:q2, "Z"]]],
+             [13, :q2, "a", "Z", [[:q2, "Z"]]],
+             [14, :q2, "a", "Z", [[:q2, "Z"]]],
             ])
   end
 
@@ -61,7 +63,7 @@ class PDATests < Test::Unit::TestCase
       assert(@nonpal.accept?(Configuration.new(:q0, s, "Z")), s)
     end
     ["a", "bb", "aba", "bbb", "abba", "bbbbbb"].each do |s|
-      assert_false(@nonpal.accept?(Configuration.new(:q0, s, "Z")), s)
+      assert(!@nonpal.accept?(Configuration.new(:q0, s, "Z")), s)
     end
   end
 end
