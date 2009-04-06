@@ -8,10 +8,12 @@ Rule = Struct.new(:number, :config, :moves)
 Move = Struct.new(:rule_number, :state, :stack)
 
 class PDA
-  def initialize(rules)
+  def initialize(accepting_state, rules)
+    @accepting_state = accepting_state
     @rules = rules.map! do |r|
       Rule.new(r[0], Configuration.new(r[1], r[2], r[3]), r[4].map! { |m| Move.new(r[0], m[0], m[1]) })
     end
+    @max = 0 # This keeps track of the length of the initial input string during computation
   end
   
   def print_rules
@@ -24,26 +26,30 @@ class PDA
   
   def accept?(config)
     @accept = false
-    derivation_tree(config)
+    computation_tree(config)
     @accept
   end
   
   def count_leaf_nodes(config)
     @leaf_nodes = 0
-    derivation_tree(config)
+    computation_tree(config)
     @leaf_nodes
   end
 
   # This is the meat of the PDA. This is a recursive method that traverses the computation graph.
   # We terminate on acceptance or crash.
-  def derivation_tree(config, verbose=false, whitespace="")
+  def computation_tree(config, verbose=false, whitespace="")
+    @max = @max > config.input.size ? @max : config.input.size # this is how we know the length of the *initial* input string
     print "(#{config.state}, #{config.input}, #{config.stack})\n" if verbose
     moves = get_moves(config) # Let's go get some moves based on our current configuration
     
     # But let's handle the terminal cases of our recursion first
-    if config.state == :q2 && config.input.empty? && config.stack == "Z"
+    if config.state == @accepting_state && config.input.empty? && config.stack == "Z"
       accept "Accept\n", verbose
-    elsif moves.nil? || moves.empty?
+    elsif moves.nil? || moves.empty? || whitespace.size > 2 * @max
+      # We normally only crash when we don't have any moves
+      # *But* Note: kind of a hack, but I crash early if you've reached 2*@max computations 
+      # because some computations can go on forever
       crash "Crash! I couldn't find a rule for: state #{config.state}, input #{config.input}, stack #{config.stack}\n", verbose
     else
       # OK, we're not in a terminal condition. I guess we need those moves we found.
@@ -56,9 +62,13 @@ class PDA
           unread = top(config.input)[1] # Otherwise, we read a character off the top
         end
         # Recurse. Our new configuration uses: the state given by the move, our new unread input, stack with top symbol replaced
-        derivation_tree(Configuration.new(m.state, unread, m.stack + top(config.stack)[1]), verbose, whitespace + " ")
+        computation_tree(Configuration.new(m.state, unread, m.stack + top(config.stack)[1]), verbose, whitespace + " ")
       end
     end
+  rescue NoMethodError => e
+    print "whitespace was [%s] and its length was [%d] and its class is %s\n" % [whitespace, whitespace.size, whitespace.class]
+    print "@max's class is %s\n" % [@max.class]
+    raise
   end
   
 private

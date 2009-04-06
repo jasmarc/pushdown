@@ -18,7 +18,7 @@ This is the machine for palindromes:
     11:	(q1, b, b) -> (q1, )
     12:	(q1, , Z) -> (q2, Z)
 
-We can print a derivation tree. This one is for "aba":
+We can print a computation tree. This one is for "aba":
 
     (q0, aba, Z)
     rule  1 |-(q0, ba, aZ)
@@ -52,7 +52,7 @@ We can test whether certain strings accept:
                          true
     bbaabb               true
 
-We can count the number of leaf nodes in the derivation tree (crashes plus accept, if any):
+We can count the number of leaf nodes in the computation tree (crashes plus accept, if any):
 
     a                    3
     ab                   5

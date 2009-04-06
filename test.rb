@@ -4,7 +4,7 @@ require "PDA.rb"
 
 class PDATests < Test::Unit::TestCase
   def setup
-    @pal = PDA.new([
+    @pal = PDA.new(:q2, [
              [1,  :q0, "a", "Z", [[:q0, "aZ"], [:q1, "Z"]]],
              [2,  :q0, "b", "Z", [[:q0, "bZ"], [:q1, "Z"]]],
              [3,  :q0, "a", "a", [[:q0, "aa"], [:q1, "a"]]],
@@ -19,7 +19,7 @@ class PDATests < Test::Unit::TestCase
              [12, :q1, "", "Z", [[:q2, "Z"]]],
             ])
 
-    @nonpal = PDA.new([
+    @nonpal = PDA.new(:q2, [
              [1,  :q0, "a", "Z", [[:q0, "aZ"]]],
              [2,  :q0, "b", "Z", [[:q0, "bZ"]]],
              [3,  :q0, "a", "a", [[:q0, "aa"], [:q1, "a"]]],
@@ -35,19 +35,33 @@ class PDATests < Test::Unit::TestCase
              [13, :q2, "a", "Z", [[:q2, "Z"]]],
              [14, :q2, "a", "Z", [[:q2, "Z"]]],
             ])
+
+    @nonpal2 = PDA.new(:q1, [
+             [1,  :q0, "", "Z",  [[:q1, "SZ"]]],
+             [2,  :q1, "", "S",  [[:q1, "aAb"]]],
+             [3,  :q1, "", "S",  [[:q1, "bAa"]]],
+             [4,  :q1, "", "S",  [[:q1, "aSa"]]],
+             [5,  :q1, "", "S",  [[:q1, "bSb"]]],
+             [6,  :q1, "", "A",  [[:q1, ""]]],
+             [7,  :q1, "", "A",  [[:q1, "Aa"]]],
+             [8,  :q1, "", "A",  [[:q1, "Ab"]]],
+             [9,  :q1, "a", "a", [[:q1, ""]]],
+             [10, :q1, "b", "b", [[:q1, ""]]],
+             [11, :q1, "", "Z",  [[:q2, "Z"]]],
+            ])
   end
 
   def test_print_rules
     @pal.print_rules
   end
-
+  
   def test_accept
     puts "testing acceptance for pal"
     ["a", "ab", "bb", "bbb", "", "bbaabb"].each do |s|
       puts "%-20s %s" % [s, @pal.accept?(Configuration.new(:q0, s, "Z"))]
     end
   end
-
+  
   def test_count_leaf_nodes
     puts
     ["a", "ab", "bb", "aab", "aba", "bbb", "abba", "abbab", "abbaba", "bbbbbb"].each do |s|
@@ -57,13 +71,13 @@ class PDATests < Test::Unit::TestCase
   
   def test_accept_for_non_pal
     puts "testing acceptance for non-pal"
-    @nonpal.print_rules
-    @nonpal.derivation_tree(Configuration.new(:q0, "abbaba", "Z"), true)
+    @nonpal2.print_rules
+    @nonpal2.computation_tree(Configuration.new(:q0, "ab", "Z"), true)
     ["ab", "aab", "abab", "abbaba"].each do |s|
-      assert(@nonpal.accept?(Configuration.new(:q0, s, "Z")), s)
+      assert(@nonpal2.accept?(Configuration.new(:q0, s, "Z")), s)
     end
     ["a", "bb", "aba", "bbb", "abba", "bbbbbb"].each do |s|
-      assert(!@nonpal.accept?(Configuration.new(:q0, s, "Z")), s)
+      assert(!@nonpal2.accept?(Configuration.new(:q0, s, "Z")), s)
     end
   end
 end
